@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Libra - Library Account Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .view {
+            display: block;
+            animation: fadeIn 0.4s ease forwards;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="dashboard">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <i class="fa-solid fa-book-open"></i>
+                <span>Libra</span>
+            </div>
+            <nav class="nav-menu">
+                <a href="index.html" class="nav-item active">
+                    <i class="fa-solid fa-border-all"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="my-books.html" class="nav-item student-only">
+                    <i class="fa-solid fa-book-bookmark"></i>
+                    <span>My Books</span>
+                </a>
+                <a href="history.html" class="nav-item student-only">
+                    <i class="fa-solid fa-clock-rotate-left"></i>
+                    <span>History</span>
+                </a>
+                <a href="fines.html" class="nav-item student-only">
+                    <i class="fa-solid fa-file-invoice-dollar"></i>
+                    <span>Fines & Payments</span>
+                </a>
+                <a href="wishlist.html" class="nav-item student-only">
+                    <i class="fa-solid fa-heart"></i>
+                    <span>Wishlist</span>
+                </a>
+
+                <!-- LIBRARIAN ONLY NAV ITEMS (Hidden by default) -->
+                <a href="manage-books.html" class="nav-item librarian-only" style="display: none;">
+                    <i class="fa-solid fa-swatchbook"></i>
+                    <span>Manage Books</span>
+                </a>
+                <a href="manage-users.html" class="nav-item librarian-only" style="display: none;">
+                    <i class="fa-solid fa-users"></i>
+                    <span>Manage Users</span>
+                </a>
+                <a href="history.html" class="nav-item librarian-only" style="display: none;">
+                    <i class="fa-solid fa-file-invoice-dollar"></i>
+                    <span>Transactions</span>
+                </a>
+                <a href="return-books.html" class="nav-item librarian-only" style="display: none;">
+                    <i class="fa-solid fa-arrow-rotate-left"></i>
+                    <span>Return Books</span>
+                </a>
+
+                <div class="divider"></div>
+                <a href="#" class="nav-item">
+                    <i class="fa-solid fa-gear"></i>
+                    <span>Settings</span>
+                </a>
+                <a href="login.html" class="nav-item logout">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                    <span>Log Out</span>
+                </a>
+            </nav>
+        </aside>
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="header">
+                <div class="search-bar">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" placeholder="Search books, authors, or genres...">
+                </div>
+                <div class="header-actions">
+                    <!-- NEW FEATURE: Quick Scanner -->
+                    <button class="icon-btn" title="Quick Borrow Scanner">
+                        <i class="fa-solid fa-barcode"></i>
+                    </button>
+                    <!-- END NEW FEATURE -->
+                    <button class="icon-btn" title="Notifications">
+                        <i class="fa-regular fa-bell"></i>
+                        <span class="badge">3</span>
+                    </button>
+                    <div class="user-profile dropdown-container">
+                        <img src="https://ui-avatars.com/api/?name=Dev+Balar&background=6366f1&color=fff"
+                            alt="User Avatar" class="avatar">
+                        <div class="user-info">
+                            <span class="user-name">Dev Balar</span>
+                            <span class="user-role">Member</span>
+                        </div>
+                        <i class="fa-solid fa-chevron-down"
+                            style="font-size: 12px; margin-left: 8px; color: var(--text-muted);"></i>
+
+                        <!-- Profile Dropdown -->
+                        <div class="profile-dropdown" id="profile-dropdown">
+                            <div class="dropdown-header">
+                                <p class="dropdown-name" id="dropdown-name">Dev Balar</p>
+                                <p class="dropdown-email" id="dropdown-email">user@example.com</p>
+                            </div>
+                            <div class="dropdown-divider"></div>
+                            <button id="logout-btn" class="dropdown-item text-danger">
+                                <i class="fa-solid fa-arrow-right-from-bracket"></i> Logout
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </header>
+            <div class="content-wrapper">
+
+                <!-- DASHBOARD VIEW -->
+                <div class="view active">
+                    <div class="welcome-section">
+                        <h1 id="welcome-heading">Welcome back! 👋</h1>
+                        <p id="welcome-subtext">Loading your library data...</p>
+                    </div>
+
+                    <!-- Stats Overview -->
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon blue">
+                                <i class="fa-solid fa-book-open-reader"></i>
+                            </div>
+                            <div class="stat-details">
+                                <h3 id="stat1-label">Currently Borrowed</h3>
+                                <p class="stat-number" id="stat1-value">--</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon orange">
+                                <i class="fa-solid fa-triangle-exclamation"></i>
+                            </div>
+                            <div class="stat-details">
+                                <h3 id="stat2-label">Due Soon</h3>
+                                <p class="stat-number" id="stat2-value">--</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon green">
+                                <i class="fa-solid fa-book"></i>
+                            </div>
+                            <div class="stat-details">
+                                <h3 id="stat3-label">Books Read</h3>
+                                <p class="stat-number" id="stat3-value">--</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon red">
+                                <i class="fa-solid fa-circle-dollar-to-slot"></i>
+                            </div>
+                            <div class="stat-details">
+                                <h3 id="stat4-label">Pending Fines</h3>
+                                <p class="stat-number" id="stat4-value">₹0.00</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- LIBRARIAN ONLY: ADMIN DASHBOARD (Visually Distinct) -->
+                    <div id="librarian-dashboard" class="librarian-only" style="display: none;">
+
+                        <!-- Admin Banner -->
+                        <div class="admin-banner">
+                            <div class="admin-badge"><i class="fa-solid fa-shield-halved"></i> Admin Panel</div>
+                            <h1 id="admin-welcome">Library Administration</h1>
+                            <p id="admin-subtext">Manage your library catalog, issue books, and track all loans.</p>
+                        </div>
+
+                        <!-- Admin Stats (Dark Cards) -->
+                        <div class="admin-stats-grid">
+                            <div class="admin-stat-card">
+                                <div class="stat-icon-admin"><i class="fa-solid fa-books"></i></div>
+                                <div class="stat-value" id="admin-stat-books">--</div>
+                                <div class="stat-label">Total Books</div>
+                            </div>
+                            <div class="admin-stat-card">
+                                <div class="stat-icon-admin"><i class="fa-solid fa-arrow-right-from-bracket"></i></div>
+                                <div class="stat-value" id="admin-stat-issued">--</div>
+                                <div class="stat-label">Books Issued</div>
+                            </div>
+                            <div class="admin-stat-card">
+                                <div class="stat-icon-admin"><i class="fa-solid fa-user-group"></i></div>
+                                <div class="stat-value" id="admin-stat-users">--</div>
+                                <div class="stat-label">Registered Students</div>
+                            </div>
+                            <div class="admin-stat-card">
+                                <div class="stat-icon-admin"><i class="fa-solid fa-coins"></i></div>
+                                <div class="stat-value" id="admin-stat-fines" style="color: #ffc107;">₹0</div>
+                                <div class="stat-label">Pending Fines</div>
+                            </div>
+                        </div>
+
+                        <!-- Admin Quick Actions -->
+                        <div class="admin-actions-grid">
+                            <button id="btn-add-book" class="admin-action-card action-add">
+                                <i class="fa-solid fa-book-medical"></i>
+                                Add New Book
+                            </button>
+                            <button id="btn-issue-book" class="admin-action-card action-issue">
+                                <i class="fa-solid fa-paper-plane"></i>
+                                Issue to Student
+                            </button>
+                            <button id="btn-collect-fine" class="admin-action-card action-fine">
+                                <i class="fa-solid fa-hand-holding-dollar"></i>
+                                Collect Fine
+                            </button>
+                        </div>
+
+                        <!-- Issue Book Panel (Hidden by default) -->
+                        <div id="issue-form-container" class="admin-issue-panel" style="display:none;">
+                            <div class="panel-header">
+                                <h3><i class="fa-solid fa-paper-plane"></i> Issue Book to Student</h3>
+                                <button id="btn-close-issue" class="btn btn-outline btn-sm">✕ Cancel</button>
+                            </div>
+                            <div class="admin-form-grid">
+                                <div>
+                                    <label>Select Book</label>
+                                    <select id="issue-book-select">
+                                        <option value="">Loading books...</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label>Student Email</label>
+                                    <input id="issue-student-email" type="email" placeholder="student@example.com">
+                                </div>
+                                <button id="btn-confirm-issue" class="btn btn-primary"
+                                    style="padding: 12px 24px; height: fit-content;">Issue Book</button>
+                            </div>
+                            <p id="issue-msg"
+                                style="margin-top: 12px; font-size: 13px; font-weight: 500; display: none;"></p>
+                        </div>
+
+                        <!-- Active Loans Table -->
+                        <div class="admin-table-container" style="margin-bottom: 40px;">
+                            <div class="admin-table-header">
+                                <h2><i class="fa-solid fa-clipboard-list"></i> Active Loans</h2>
+                                <button id="btn-refresh-loans" class="btn btn-outline btn-sm"><i
+                                        class="fa-solid fa-rotate-right"></i> Refresh</button>
+                            </div>
+                            <table class="admin-table">
+                                <thead>
+                                    <tr>
+                                        <th>Book</th>
+                                        <th>Student</th>
+                                        <th>Email</th>
+                                        <th>Borrowed</th>
+                                        <th>Due Date</th>
+                                        <th>Status</th>
+                                        <th>Issued By</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="loans-tbody">
+                                    <tr>
+                                        <td colspan="8" class="empty-loans-message"><i class="fa-solid fa-inbox"></i>
+                                            Loading loans...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+
+                    <!-- NEW FEATURE: Daily Quote & Goal Tracker (STUDENT ONLY) -->
+                    <div class="feature-panel student-only">
+                        <div class="quote-card">
+                            <i class="fa-solid fa-quote-left quote-icon"></i>
+                            <p class="quote-text">"A reader lives a thousand lives before he dies."</p>
+                            <span class="quote-author">- George R.R. Martin</span>
+                        </div>
+                        <div class="goal-card" id="goal-card">
+                            <div class="goal-header">
+                                <h3 id="goal-year-label">2026 Reading Goal</h3>
+                                <span class="badge-status" id="goal-status-badge">Loading…</span>
+                            </div>
+                            <div class="goal-progress-circle">
+                                <svg width="100" height="100" viewBox="0 0 100 100">
+                                    <circle cx="50" cy="50" r="40" class="circle-bg" />
+                                    <circle cx="50" cy="50" r="40" class="circle-progress" id="goal-circle"
+                                        style="stroke-dasharray: 251.2; stroke-dashoffset: 251.2; transition: stroke-dashoffset 1s ease;" />
+                                </svg>
+                                <div class="goal-percentage">
+                                    <span class="pct" id="goal-pct">0%</span>
+                                </div>
+                            </div>
+                            <!-- Stats + editable target -->
+                            <p class="goal-stats" id="goal-stats">— / — Books</p>
+                            <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:10px;"
+                                id="goal-edit-row">
+                                <span style="font-size:11px;color:var(--text-muted);">Target:</span>
+                                <span id="goal-target-display"
+                                    style="font-size:13px;font-weight:700;color:var(--primary);">—</span>
+                                <button id="goal-edit-btn" title="Edit goal"
+                                    style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:12px;padding:2px 6px;border-radius:6px;transition:color .2s;">
+                                    <i class="fa-solid fa-pen"></i>
+                                </button>
+                            </div>
+                            <!-- Inline edit form (hidden by default) -->
+                            <div id="goal-edit-form" style="display:none;margin-top:10px;text-align:center;">
+                                <input type="number" id="goal-input" min="1" max="500"
+                                    style="width:70px;padding:6px 10px;background:rgba(255,255,255,.08);border:1.5px solid var(--primary);border-radius:8px;color:#fff;font-family:inherit;font-size:14px;font-weight:700;text-align:center;">
+                                <button id="goal-save-btn"
+                                    style="margin-left:6px;padding:6px 14px;background:var(--primary);color:#fff;border:none;border-radius:8px;font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;">
+                                    Save
+                                </button>
+                                <button id="goal-cancel-btn"
+                                    style="margin-left:4px;padding:6px 10px;background:rgba(255,255,255,.06);color:var(--text-muted);border:1px solid var(--border);border-radius:8px;font-family:inherit;font-size:12px;cursor:pointer;">
+                                    Cancel
+                                </button>
+                                <p id="goal-save-msg" style="font-size:11px;margin-top:6px;display:none;"></p>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- END NEW FEATURE -->
+
+
+                    <div class="grid-layout student-only">
+                        <!-- Currently Borrowed -->
+                        <section class="borrowed-section">
+                            <div class="section-header">
+                                <h2>Currently Reading</h2>
+                                <a href="my-books.html" class="view-all">View All</a>
+                            </div>
+                            <div class="book-list" id="active-borrows-list">
+                                <!-- Dynamic Books Injected Here -->
+                            </div>
+                        </section>
+
+                        <!-- Recommendations / Recent -->
+                        <section class="recommendations-section">
+                            <div class="section-header">
+                                <h2>Recommended for You</h2>
+                            </div>
+                            <div class="recs-grid" id="recommendations-container">
+                                <!-- Dynamic Recs Injected Here -->
+                            </div>
+                        </section>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script src="script.js"></script>
+</body>
+
+</html>

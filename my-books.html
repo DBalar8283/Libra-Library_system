@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Libra – My Books</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .view {
+            display: block;
+            animation: fadeIn 0.4s ease forwards;
+        }
+
+        /* ── Book grid ── */
+        .my-books-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 22px;
+        }
+
+        .my-book-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            overflow: hidden;
+            transition: transform .25s, box-shadow .25s, border-color .25s;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .my-book-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 16px 40px rgba(0, 0, 0, .3);
+            border-color: rgba(99, 102, 241, .4);
+        }
+
+        .my-book-cover-wrap {
+            width: 100%;
+            height: 160px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .my-book-cover-wrap .book-cover {
+            width: 100%;
+            height: 100%;
+            border-radius: 0;
+        }
+
+        /* Overdue ribbon */
+        .overdue-ribbon {
+            position: absolute;
+            top: 12px;
+            right: -8px;
+            background: #ef4444;
+            color: #fff;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 3px 12px 3px 8px;
+            letter-spacing: .5px;
+            border-radius: 4px 0 0 4px;
+            box-shadow: -2px 2px 6px rgba(0, 0, 0, .3);
+        }
+
+        .due-soon-ribbon {
+            position: absolute;
+            top: 12px;
+            right: -8px;
+            background: #f59e0b;
+            color: #fff;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 3px 12px 3px 8px;
+            letter-spacing: .5px;
+            border-radius: 4px 0 0 4px;
+            box-shadow: -2px 2px 6px rgba(0, 0, 0, .3);
+        }
+
+        .my-book-body {
+            padding: 16px 18px 18px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .my-book-body h4 {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 0;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .my-book-body .author {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin: 0;
+        }
+
+        .due-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 50px;
+            margin-top: 4px;
+        }
+
+        .due-badge.success {
+            background: rgba(74, 222, 128, .12);
+            color: #4ade80;
+        }
+
+        .due-badge.warning {
+            background: rgba(245, 158, 11, .12);
+            color: #f59e0b;
+        }
+
+        .due-badge.danger {
+            background: rgba(239, 68, 68, .12);
+            color: #f87171;
+        }
+
+        .progress-wrap {
+            margin-top: 8px;
+        }
+
+        .progress-track {
+            height: 4px;
+            background: rgba(255, 255, 255, .08);
+            border-radius: 2px;
+            overflow: hidden;
+            margin-bottom: 4px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 2px;
+            background: var(--primary, #0056b3);
+            transition: width .8s ease;
+        }
+
+        .progress-fill.warning-fill {
+            background: var(--warning, #ffc107);
+        }
+
+        .progress-fill.danger-fill {
+            background: var(--danger, #dc3545);
+        }
+
+        .progress-label {
+            font-size: 10px;
+            color: var(--text-muted);
+        }
+
+        .btn-fine-link {
+            width: 100%;
+            margin-top: 10px;
+            padding: 9px;
+            background: rgba(239, 68, 68, .1);
+            border: 1.5px solid rgba(239, 68, 68, .35);
+            color: #f87171;
+            border-radius: 10px;
+            font-family: inherit;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: all .2s;
+            text-decoration: none;
+        }
+
+        .btn-fine-link:hover {
+            background: rgba(239, 68, 68, .2);
+            border-color: rgba(239, 68, 68, .6);
+        }
+
+        /* ── Summary bar ── */
+        .books-summary-bar {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+
+        .summary-chip {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 50px;
+            padding: 8px 16px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .summary-chip i {
+            font-size: 14px;
+        }
+
+        .summary-chip.chip-blue i {
+            color: #60a5fa;
+        }
+
+        .summary-chip.chip-orange i {
+            color: #f59e0b;
+        }
+
+        .summary-chip.chip-red i {
+            color: #f87171;
+        }
+
+        /* Loading / empty states */
+        .books-loading {
+            text-align: center;
+            padding: 60px;
+            color: var(--text-muted);
+        }
+
+        .empty-books {
+            text-align: center;
+            padding: 60px 24px;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            grid-column: 1 / -1;
+        }
+
+        .empty-books i {
+            font-size: 52px;
+            color: #6366f1;
+            opacity: .5;
+            margin-bottom: 14px;
+            display: block;
+        }
+
+        .empty-books h3 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .empty-books p {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+        }
+
+        .btn-explore {
+            padding: 10px 24px;
+            background: var(--primary, #0056b3);
+            color: #fff;
+            border: none;
+            border-radius: 50px;
+            font-family: inherit;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: none;
+            transition: all .25s;
+        }
+
+        .btn-explore:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 22px rgba(99, 102, 241, .5);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="dashboard">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <i class="fa-solid fa-book-open"></i>
+                <span>Libra</span>
+            </div>
+            <nav class="nav-menu">
+                <a href="index.html" class="nav-item">
+                    <i class="fa-solid fa-border-all"></i><span>Dashboard</span>
+                </a>
+                <a href="my-books.html" class="nav-item active">
+                    <i class="fa-solid fa-book-bookmark"></i><span>My Books</span>
+                </a>
+                <a href="history.html" class="nav-item">
+                    <i class="fa-solid fa-clock-rotate-left"></i><span>History</span>
+                </a>
+                <a href="fines.html" class="nav-item">
+                    <i class="fa-solid fa-file-invoice-dollar"></i><span>Fines & Payments</span>
+                </a>
+                <a href="wishlist.html" class="nav-item">
+                    <i class="fa-solid fa-heart"></i><span>Wishlist</span>
+                </a>
+                <div class="divider"></div>
+                <a href="#" class="nav-item">
+                    <i class="fa-solid fa-gear"></i><span>Settings</span>
+                </a>
+                <a href="login.html" class="nav-item logout">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i><span>Log Out</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="header">
+                <div class="search-bar">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" placeholder="Search your books..." id="search-input">
+                </div>
+                <div class="header-actions">
+                    <div class="user-profile">
+                        <img src="https://ui-avatars.com/api/?name=User&background=6366f1&color=fff" alt="Avatar"
+                            class="avatar" id="header-avatar">
+                        <div class="user-info">
+                            <span class="user-name" id="header-name">—</span>
+                            <span class="user-role">Student</span>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <div class="content-wrapper">
+                <div class="view active">
+                    <div class="page-header">
+                        <h1>My Books</h1>
+                        <p>Books you currently have borrowed from the library.</p>
+                    </div>
+
+                    <!-- Summary chips -->
+                    <div class="books-summary-bar" id="summary-bar" style="display:none;">
+                        <div class="summary-chip chip-blue">
+                            <i class="fa-solid fa-book-open-reader"></i>
+                            <span id="chip-total">0 Borrowed</span>
+                        </div>
+                        <div class="summary-chip chip-orange" id="chip-due-wrap">
+                            <i class="fa-solid fa-triangle-exclamation"></i>
+                            <span id="chip-due">0 Due Soon</span>
+                        </div>
+                        <div class="summary-chip chip-red" id="chip-overdue-wrap" style="display:none;">
+                            <i class="fa-solid fa-circle-exclamation"></i>
+                            <span id="chip-overdue">0 Overdue</span>
+                        </div>
+                    </div>
+
+                    <!-- Loading -->
+                    <div class="books-loading" id="books-loading">
+                        <i class="fa-solid fa-spinner fa-spin fa-2x" style="margin-bottom:12px;display:block;"></i>
+                        Loading your borrowed books…
+                    </div>
+
+                    <!-- Books grid -->
+                    <div class="my-books-grid" id="books-grid" style="display:none;"></div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        const API = 'http://localhost:3000';
+        const token = localStorage.getItem('libra_token');
+        const userStr = localStorage.getItem('libra_user');
+
+        if (!token || !userStr) { window.location.href = 'login.html'; }
+
+        const user = JSON.parse(userStr);
+        document.getElementById('header-name').textContent = user.name || 'Student';
+        if (user.photoURL) {
+            document.getElementById('header-avatar').src = user.photoURL;
+        } else {
+            document.getElementById('header-avatar').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || 'User')}&background=6366f1&color=fff`;
+        }
+
+        let allBorrows = [];
+
+        async function loadMyBooks() {
+            try {
+                const res = await fetch(`${API}/api/student/dashboard`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+                if (!data.success) throw new Error(data.message);
+                allBorrows = data.borrows || [];
+                renderBooks(allBorrows);
+            } catch (e) {
+                document.getElementById('books-loading').innerHTML = `
+                    <i class="fa-solid fa-circle-exclamation fa-2x" style="color:var(--danger);display:block;margin-bottom:12px;"></i>
+                    Could not load your books. Is the server running?`;
+            }
+        }
+
+        function renderBooks(borrows) {
+            document.getElementById('books-loading').style.display = 'none';
+            const grid = document.getElementById('books-grid');
+            const summaryBar = document.getElementById('summary-bar');
+            grid.style.display = 'grid';
+            grid.innerHTML = '';
+
+            if (borrows.length === 0) {
+                grid.innerHTML = `
+                    <div class="empty-books">
+                        <i class="fa-solid fa-book-open"></i>
+                        <h3>No Books Borrowed</h3>
+                        <p>You haven't borrowed any books yet. Head to the dashboard to explore our catalog!</p>
+                        <a href="index.html" class="btn-explore">
+                            <i class="fa-solid fa-compass"></i> Explore Catalog
+                        </a>
+                    </div>`;
+                return;
+            }
+
+            summaryBar.style.display = 'flex';
+
+            const today = new Date();
+            let dueSoonCount = 0;
+            let overdueCount = 0;
+
+            borrows.forEach(b => {
+                const dueDate = new Date(b.dueDate);
+                const diffDays = Math.ceil((dueDate - today) / (1000 * 60 * 60 * 24));
+
+                let dueClass = 'success';
+                let dueText = `Due in ${diffDays} day${diffDays !== 1 ? 's' : ''}`;
+                let dueIcon = 'fa-clock';
+                let ribbon = '';
+                let progressFillClass = '';
+
+                if (diffDays <= 3 && diffDays >= 0) {
+                    dueClass = 'warning';
+                    dueText = `Due in ${diffDays} day${diffDays !== 1 ? 's' : ''}`;
+                    dueIcon = 'fa-triangle-exclamation';
+                    ribbon = `<div class="due-soon-ribbon">Due Soon</div>`;
+                    progressFillClass = 'warning-fill';
+                    dueSoonCount++;
+                }
+                if (diffDays < 0) {
+                    dueClass = 'danger';
+                    dueText = `Overdue by ${Math.abs(diffDays)} day${Math.abs(diffDays) !== 1 ? 's' : ''}`;
+                    dueIcon = 'fa-circle-exclamation';
+                    ribbon = `<div class="overdue-ribbon">OVERDUE</div>`;
+                    progressFillClass = 'danger-fill';
+                    overdueCount++;
+                }
+
+                // Progress: fraction of 14-day loan period elapsed
+                const progress = Math.max(0, Math.min(100, Math.round(((14 - diffDays) / 14) * 100)));
+
+                const fineBtn = diffDays < 0 ? `
+                    <a href="fines.html" class="btn-fine-link">
+                        <i class="fa-solid fa-credit-card"></i> Pay Fine
+                    </a>` : '';
+
+                grid.insertAdjacentHTML('beforeend', `
+                    <div class="my-book-card">
+                        <div class="my-book-cover-wrap">
+                            <div class="book-cover ${b.coverClass || 'placeholder-cover-1'}"></div>
+                            ${ribbon}
+                        </div>
+                        <div class="my-book-body">
+                            <h4>${b.title || b.bookTitle}</h4>
+                            <p class="author">${b.author || b.bookAuthor}</p>
+                            <div class="due-badge ${dueClass}">
+                                <i class="fa-regular ${dueIcon}"></i> ${dueText}
+                            </div>
+                            <div class="progress-wrap">
+                                <div class="progress-track">
+                                    <div class="progress-fill ${progressFillClass}" style="width:${progress}%;"></div>
+                                </div>
+                                <span class="progress-label">${progress}% reading period used</span>
+                            </div>
+                            <p class="author" style="font-size:11px;margin-top:4px;">
+                                <i class="fa-solid fa-circle-info"></i> Visit librarian to renew
+                            </p>
+                            ${fineBtn}
+                        </div>
+                    </div>
+                `);
+            });
+
+            // Update summary chips
+            document.getElementById('chip-total').textContent = `${borrows.length} Borrowed`;
+            document.getElementById('chip-due').textContent = `${dueSoonCount} Due Soon`;
+            if (overdueCount > 0) {
+                document.getElementById('chip-overdue-wrap').style.display = 'flex';
+                document.getElementById('chip-overdue').textContent = `${overdueCount} Overdue`;
+            }
+        }
+
+        // Live search filter
+        document.getElementById('search-input').addEventListener('input', function () {
+            const q = this.value.toLowerCase().trim();
+            if (!q) { renderBooks(allBorrows); return; }
+            const filtered = allBorrows.filter(b =>
+                (b.title || b.bookTitle || '').toLowerCase().includes(q) ||
+                (b.author || b.bookAuthor || '').toLowerCase().includes(q)
+            );
+            renderBooks(filtered);
+        });
+
+        loadMyBooks();
+    </script>
+</body>
+
+</html>

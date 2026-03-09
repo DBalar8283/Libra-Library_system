@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Libra - Return Books</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+    <div class="dashboard">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <i class="fa-solid fa-book-open"></i>
+                <span>Libra</span>
+            </div>
+            <nav class="nav-menu">
+                <a href="index.html" class="nav-item">
+                    <i class="fa-solid fa-border-all"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="my-books.html" class="nav-item student-only" style="display: none;">
+                    <i class="fa-solid fa-book-bookmark"></i>
+                    <span>My Books</span>
+                </a>
+                <a href="history.html" class="nav-item student-only" style="display: none;">
+                    <i class="fa-solid fa-clock-rotate-left"></i>
+                    <span>History</span>
+                </a>
+                <a href="fines.html" class="nav-item student-only" style="display: none;">
+                    <i class="fa-solid fa-file-invoice-dollar"></i>
+                    <span>Fines & Payments</span>
+                </a>
+                <a href="wishlist.html" class="nav-item student-only" style="display: none;">
+                    <i class="fa-solid fa-heart"></i>
+                    <span>Wishlist</span>
+                </a>
+
+                <!-- LIBRARIAN ONLY NAV ITEMS -->
+                <a href="manage-books.html" class="nav-item librarian-only">
+                    <i class="fa-solid fa-swatchbook"></i>
+                    <span>Manage Books</span>
+                </a>
+                <a href="manage-users.html" class="nav-item librarian-only">
+                    <i class="fa-solid fa-users"></i>
+                    <span>Manage Users</span>
+                </a>
+                <a href="history.html" class="nav-item librarian-only">
+                    <i class="fa-solid fa-file-invoice-dollar"></i>
+                    <span>Transactions</span>
+                </a>
+                <a href="return-books.html" class="nav-item librarian-only active">
+                    <i class="fa-solid fa-arrow-rotate-left"></i>
+                    <span>Return Books</span>
+                </a>
+
+                <div class="divider"></div>
+                <a href="login.html" class="nav-item logout">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                    <span>Log Out</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="header">
+                <div class="search-bar">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" id="return-search" placeholder="Search by student email or book title...">
+                </div>
+                <div class="header-actions">
+                    <div class="user-profile dropdown-container">
+                        <img src="https://ui-avatars.com/api/?name=Librarian&background=0056b3&color=fff"
+                            alt="User Avatar" class="avatar" id="user-avatar-img">
+                        <div class="user-info">
+                            <span class="user-name" id="header-user-name">Librarian</span>
+                            <span class="user-role" id="header-user-role">Admin</span>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <div class="content-wrapper view active">
+                <div class="admin-banner" style="margin-bottom:28px;background-color:var(--primary,#0056b3);">
+                    <div class="admin-badge" style="background:rgba(255,255,255,.15);color:#bfdbfe;">
+                        <i class="fa-solid fa-arrow-rotate-left"></i> Book Returns
+                    </div>
+                    <h1>Return Books</h1>
+                    <p style="color:rgba(255,255,255,0.85);margin-top:6px;">Process returned books and clear active
+                        student loans.</p>
+                </div>
+
+                <div class="admin-table-container">
+                    <div class="admin-table-header">
+                        <h2><i class="fa-solid fa-book-circle-arrow-right"></i> Active Student Loans</h2>
+                        <button id="btn-refresh-returns" class="btn btn-outline btn-sm"><i
+                                class="fa-solid fa-rotate-right"></i> Refresh</button>
+                    </div>
+
+                    <!-- Search Results -->
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Book Title</th>
+                                <th>Student Email</th>
+                                <th>Borrowed On</th>
+                                <th>Due Date</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="returns-tbody">
+                            <tr>
+                                <td colspan="6" class="empty-loans-message"><i class="fa-solid fa-spinner fa-spin"></i>
+                                    Loading...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="toast"></div>
+
+    <script>
+        // Inline script to handle return logic specific to this page
+        document.addEventListener('DOMContentLoaded', () => {
+            const token = localStorage.getItem('libra_token');
+            const userJson = localStorage.getItem('libra_user');
+            let userData = null;
+            try { userData = JSON.parse(userJson); } catch (e) { }
+            const role = userData ? userData.role : null;
+
+            if (!token || role !== 'librarian') {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            let allActiveLoans = [];
+            const tbody = document.getElementById('returns-tbody');
+            const searchInput = document.getElementById('return-search');
+
+            async function fetchActiveLoans() {
+                try {
+                    const res = await fetch('/api/borrows', {
+                        headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }
+                    });
+                    const data = await res.json();
+
+                    if (data.success) {
+                        allActiveLoans = data.borrows;
+                        renderLoans(allActiveLoans);
+                    } else {
+                        tbody.innerHTML = `<tr><td colspan="6" class="empty-loans-message">Failed to load active loans.</td></tr>`;
+                    }
+                } catch (e) {
+                    tbody.innerHTML = `<tr><td colspan="6" class="empty-loans-message">Error connecting to server.</td></tr>`;
+                }
+            }
+
+            function renderLoans(loans) {
+                if (!loans || loans.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="6" class="empty-loans-message">No active loans found.</td></tr>`;
+                    return;
+                }
+
+                tbody.innerHTML = loans.map(loan => {
+                    const borrowDate = new Date(loan.borrowDate).toLocaleDateString();
+                    const dueDate = new Date(loan.dueDate).toLocaleDateString();
+
+                    let statusHtml = '';
+                    if (loan.overdue) {
+                        statusHtml = `<span class="status-badge error">Overdue (${Math.abs(loan.daysLeft)} days)</span>`;
+                    } else {
+                        statusHtml = `<span class="status-badge active">${loan.daysLeft} days left</span>`;
+                    }
+
+                    return `
+                        <tr>
+                            <td style="font-weight: 600; color: var(--text-main);">${loan.bookTitle}</td>
+                            <td>${loan.studentEmail}</td>
+                            <td>${borrowDate}</td>
+                            <td class="${loan.overdue ? 'text-danger' : ''}">${dueDate}</td>
+                            <td>${statusHtml}</td>
+                            <td>
+                                <button class="btn btn-primary btn-sm return-book-btn" data-txid="${loan.txId}">
+                                    <i class="fa-solid fa-arrow-turn-down-left"></i> Return
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+
+                // Add event listeners to return buttons
+                document.querySelectorAll('.return-book-btn').forEach(btn => {
+                    btn.addEventListener('click', async (e) => {
+                        const txId = e.currentTarget.getAttribute('data-txid');
+                        await processReturn(txId);
+                    });
+                });
+            }
+
+            async function processReturn(txId) {
+                if (!confirm('Are you sure you want to mark this book as returned?')) return;
+
+                try {
+                    const res = await fetch('/api/books/return', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify({ txId })
+                    });
+                    const data = await res.json();
+
+                    if (data.success) {
+                        showToast(data.message, 'success');
+                        fetchActiveLoans(); // Refresh list
+                    } else {
+                        showToast(data.message || 'Error returning book.', 'error');
+                    }
+                } catch (e) {
+                    showToast('Server error while returning book.', 'error');
+                }
+            }
+
+            function showToast(message, type = 'success') {
+                const toast = document.getElementById('toast');
+                toast.textContent = message;
+                toast.className = 'toast show ' + type;
+                setTimeout(() => toast.classList.remove('show', 'error', 'success'), 3000);
+            }
+
+            // Search functionality
+            searchInput.addEventListener('input', (e) => {
+                const term = e.target.value.toLowerCase();
+                const filtered = allActiveLoans.filter(loan =>
+                    loan.studentEmail.toLowerCase().includes(term) ||
+                    loan.bookTitle.toLowerCase().includes(term) ||
+                    (loan.studentName && loan.studentName.toLowerCase().includes(term))
+                );
+                renderLoans(filtered);
+            });
+
+            document.getElementById('btn-refresh-returns').addEventListener('click', fetchActiveLoans);
+
+            // Initial fetch
+            fetchActiveLoans();
+
+            // Setup profile info from localstorage
+            const name = (userData && userData.name) || 'Librarian';
+            const email = (userData && userData.email) || '';
+            document.getElementById('header-user-name').textContent = name;
+            document.getElementById('header-user-role').textContent = 'Librarian';
+            // Update avatar with correct name
+            const avatarImg = document.getElementById('user-avatar-img');
+            if (avatarImg) avatarImg.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=0056b3&color=fff`;
+        });
+    </script>
+    <script src="script.js"></script>
+</body>
+
+</html>
