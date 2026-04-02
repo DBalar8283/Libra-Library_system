@@ -1,33 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Libra – Library System</title>
-    <link rel="stylesheet" href="styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap"
-        rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-    <!-- Firebase SDK (compat) -->
-    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
-    <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyDonXCdDnV7P0maXDdB1eNpCgKi8Apvab0",
-            authDomain: "libraweb-b8042.firebaseapp.com",
-            projectId: "libraweb-b8042",
-            storageBucket: "libraweb-b8042.firebasestorage.app",
-            messagingSenderId: "69912401460",
-            appId: "1:69912401460:web:dc89fbe7224bc9ad1d1c61",
-            measurementId: "G-2CV3Q3433N"
-        };
-        firebase.initializeApp(firebaseConfig);
-    </script>
-
-    <style>
-        /* ─── RESET & BASE ─────────────────────────────────── */
+/* ΓöÇΓöÇΓöÇ RESET & BASE ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ */
         *,
         *::before,
         *::after {
@@ -46,7 +17,7 @@
             background: #f4f6f9;
         }
 
-        /* ─── PARTICLE CANVAS ──────────────────────────────── */
+        /* ΓöÇΓöÇΓöÇ PARTICLE CANVAS ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ */
         #particle-canvas {
             position: fixed;
             inset: 0;
@@ -54,7 +25,7 @@
             z-index: 0;
         }
 
-        /* ─── FLOATING BG ICONS ────────────────────────────── */
+        /* ΓöÇΓöÇΓöÇ FLOATING BG ICONS ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ */
         .bg-books {
             position: fixed;
             inset: 0;
@@ -89,7 +60,7 @@
             }
         }
 
-        /* ─── SCENE WRAPPER ────────────────────────────────── */
+        /* ΓöÇΓöÇΓöÇ SCENE WRAPPER ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ */
         .scene-wrapper {
             position: relative;
             z-index: 10;
@@ -99,7 +70,7 @@
             gap: 0;
         }
 
-        /* ─── HERO LABEL (above book) ──────────────────────── */
+        /* ΓöÇΓöÇΓöÇ HERO LABEL (above book) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ */
         .hero-label {
             text-align: center;
             margin-bottom: 32px;
@@ -134,13 +105,13 @@
             }
         }
 
-        /* ─── BOOK SCENE ──────────────────────────────────── */
+        /* ΓöÇΓöÇΓöÇ BOOK SCENE ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ */
         .book-scene {
             perspective: 1800px;
             perspective-origin: 50% 45%;
         }
 
-        /* The book root — shifted right so opened cover has space on left */
+        /* The book root ΓÇö shifted right so opened cover has space on left */
         .book-3d {
             width: 340px;
             height: 500px;
@@ -167,7 +138,7 @@
             transform: translateY(-6px) rotateY(0deg);
         }
 
-        /* ─── BOOK SPINE (left strip) ─────────────────────── */
+        /* ΓöÇΓöÇΓöÇ BOOK SPINE (left strip) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ */
         .book-spine {
             position: absolute;
             width: 28px;
@@ -195,7 +166,7 @@
             writing-mode: vertical-rl;
         }
 
-        /* ─── BACK COVER ──────────────────────────────────── */
+        /* ΓöÇΓöÇΓöÇ BACK COVER ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ */
         .book-cover-back {
             position: absolute;
             inset: 0;
@@ -205,7 +176,7 @@
             box-shadow: -2px 2px 8px rgba(0, 0, 0, 0.2);
         }
 
-        /* ─── PAGES STACK ─────────────────────────────────── */
+        /* ΓöÇΓöÇΓöÇ PAGES STACK ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ */
         .book-pages {
             position: absolute;
             width: 100%;
@@ -269,7 +240,7 @@
             transform: translateZ(-9px) rotateY(9deg);
         }
 
-        /* ─── LOGIN PANEL (inside the open pages) ─────────── */
+        /* ΓöÇΓöÇΓöÇ LOGIN PANEL (inside the open pages) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ */
         .login-panel {
             position: absolute;
             inset: 0;
@@ -479,7 +450,7 @@
             font-size: 11px;
         }
 
-        /* ─── FRONT COVER (container) ─────────────────────── */
+        /* ΓöÇΓöÇΓöÇ FRONT COVER (container) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ */
         .book-cover-front {
             position: absolute;
             inset: 0;
@@ -492,12 +463,12 @@
             z-index: 10;
         }
 
-        /* ── OPEN STATE: cover swings fully open to the left ── */
+        /* ΓöÇΓöÇ OPEN STATE: cover swings fully open to the left ΓöÇΓöÇ */
         .book-3d.is-open .book-cover-front {
             transform: translateZ(26px) rotateY(-162deg);
         }
 
-        /* ─── FRONT COVER: OUTSIDE FACE ───────────────────── */
+        /* ΓöÇΓöÇΓöÇ FRONT COVER: OUTSIDE FACE ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ */
         .cover-outside {
             position: absolute;
             inset: 0;
@@ -548,7 +519,7 @@
             box-shadow: 4px 6px 16px rgba(0, 0, 0, 0.2);
         }
 
-        /* ─── FRONT COVER: INSIDE FACE ────────────────────── */
+        /* ΓöÇΓöÇΓöÇ FRONT COVER: INSIDE FACE ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ */
         .cover-inside {
             position: absolute;
             inset: 0;
@@ -567,7 +538,7 @@
             box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.15);
         }
 
-        /* ─── THOUGHT PANEL (external — left of book, 2D) ────── */
+        /* ΓöÇΓöÇΓöÇ THOUGHT PANEL (external ΓÇö left of book, 2D) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ */
         .thought-panel {
             position: absolute;
             right: calc(100% + 6px);
@@ -668,7 +639,7 @@
             z-index: 1;
         }
 
-        /* ─── ACCESS WEBSITE BUTTON ───────────────────────── */
+        /* ΓöÇΓöÇΓöÇ ACCESS WEBSITE BUTTON ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ */
         .btn-access {
             position: relative;
             z-index: 2;
@@ -739,7 +710,7 @@
             }
         }
 
-        /* ─── CLOSE BOOK BUTTON ───────────────────────────── */
+        /* ΓöÇΓöÇΓöÇ CLOSE BOOK BUTTON ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ */
         .btn-close-book {
             position: absolute;
             bottom: -48px;
@@ -774,7 +745,7 @@
             color: rgba(255, 255, 255, 0.85);
         }
 
-        /* ─── HINT ARROW (only on closed state) ──────────── */
+        /* ΓöÇΓöÇΓöÇ HINT ARROW (only on closed state) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ */
         .hint-arrow {
             position: absolute;
             bottom: -52px;
@@ -804,7 +775,7 @@
             }
         }
 
-        /* ─── GLOWING ORBS (bg decoration) ───────────────── */
+        /* ΓöÇΓöÇΓöÇ GLOWING ORBS (bg decoration) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ */
         .orb {
             display: none;
         }
@@ -849,353 +820,3 @@
                 transform: translate(20px, 20px);
             }
         }
-    </style>
-</head>
-
-<body class="login-body">
-
-    <!-- Background decoration -->
-    <div class="orb orb1"></div>
-    <div class="orb orb2"></div>
-    <div class="orb orb3"></div>
-    <canvas id="particle-canvas"></canvas>
-    <div class="bg-books" id="bg-books"></div>
-
-    <!-- Main Scene -->
-    <div class="scene-wrapper">
-
-        <!-- Hero label -->
-        <div class="hero-label">
-            <h1>Libra</h1>
-            <p>Your Digital Library Portal</p>
-        </div>
-
-        <!-- Book Scene -->
-        <div class="book-scene" style="position:relative;">
-            <div class="book-3d" id="book3d">
-
-                <!-- Book spine (left 3D edge) -->
-                <div class="book-spine"></div>
-
-                <!-- Back cover -->
-                <div class="book-cover-back"></div>
-
-                <!-- Pages with login panel inside -->
-                <div class="book-pages">
-                    <div class="page-stack">
-                        <!-- Login options live here -->
-                        <div class="login-panel">
-                            <div class="login-panel-header">
-                                <i class="fa-solid fa-book-open"></i>
-                                <h2>Welcome Back</h2>
-                                <p>Sign in to access your library</p>
-                            </div>
-
-                            <button id="google-login-btn" class="google-btn">
-                                <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google Logo">
-                                Student Sign in with Google
-                            </button>
-
-                            <div class="divider">or Staff Login</div>
-
-                            <form id="admin-login-form" style="width:100%;">
-                                <div class="form-group">
-                                    <div class="floating-label-group">
-                                        <input type="email" id="admin-email" class="form-control"
-                                            placeholder="admin@library.com" required>
-                                        <label for="admin-email">Librarian Email</label>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <div class="floating-label-group">
-                                        <input type="password" id="admin-password" class="form-control"
-                                            placeholder="••••••••" required>
-                                        <label for="admin-password">Password</label>
-                                    </div>
-                                </div>
-                                <button type="submit" class="btn-submit" id="admin-login-btn">
-                                    <i class="fa-solid fa-lock" style="margin-right:7px;"></i> Access Dashboard
-                                </button>
-                            </form>
-
-                            <p id="admin-error" style="display:none;"></p>
-
-                            <button id="dev-student-login" class="btn-dev">
-                                <i class="fa-solid fa-flask"></i> Test Student Login Config
-                            </button>
-                        </div>
-                    </div>
-                    <div class="page-stack"></div>
-                    <div class="page-stack"></div>
-                    <div class="page-stack"></div>
-                </div>
-
-                <!-- Front cover — hinge left edge -->
-                <div class="book-cover-front" id="book-cover-front">
-                    <!-- OUTSIDE OF COVER -->
-                    <div class="cover-outside">
-                        <div class="cover-glow-ring">
-                            <i class="fa-solid fa-book-open cover-icon-main"></i>
-                        </div>
-                        <span class="cover-title-main">Libra</span>
-                        <div class="cover-divider"></div>
-                        <span class="cover-subtitle-main">Library System</span>
-                        <button class="btn-access" id="btn-access-website">
-                            <i class="fa-solid fa-door-open"></i>
-                            Access Website
-                            <i class="fa-solid fa-chevron-right chevron"></i>
-                        </button>
-                    </div>
-
-                    <!-- INSIDE OF COVER -->
-                    <div class="cover-inside"></div>
-                </div>
-
-            </div>
-
-            <!-- Thought panel (left of book, fades in when open) -->
-            <div class="thought-panel">
-                <i class="fa-solid fa-quote-left thought-icon"></i>
-                <p class="thought-quote" id="thought-quote"></p>
-                <div class="thought-divider"></div>
-                <span class="thought-author" id="thought-author"></span>
-            </div>
-
-            <!-- Hint arrow (outside book-3d so it can fade) -->
-            <div class="hint-arrow" id="hint-arrow">
-                <i class="fa-solid fa-chevron-down"></i>
-            </div>
-
-            <!-- Close book button (outside book-3d) -->
-            <button class="btn-close-book" id="btn-close-book">
-                <i class="fa-solid fa-book"></i> Close Book
-            </button>
-        </div>
-
-    </div>
-
-    <script>
-        // ─── AUTH REDIRECT ───────────────────────────────────
-        (function () {
-            const token = localStorage.getItem('libra_token');
-            const user = localStorage.getItem('libra_user');
-            if (token && user) {
-                try { JSON.parse(user); window.location.href = 'index.html'; }
-                catch (e) { localStorage.removeItem('libra_token'); localStorage.removeItem('libra_user'); }
-            }
-        })();
-
-        // ─── PARTICLES ───────────────────────────────────────
-        const canvas = document.getElementById('particle-canvas');
-        const ctx = canvas.getContext('2d');
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-        window.addEventListener('resize', () => {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        });
-
-        class Particle {
-            constructor() { this.reset(true); }
-            reset(init = false) {
-                this.x = Math.random() * canvas.width;
-                this.y = init ? Math.random() * canvas.height : canvas.height + 10;
-                this.size = Math.random() * 2.5 + 0.5;
-                this.speed = Math.random() * 0.5 + 0.1;
-                this.drift = (Math.random() - 0.5) * 0.3;
-                this.life = 0;
-                this.maxLife = Math.random() * 250 + 120;
-                this.maxAlpha = Math.random() * 0.3 + 0.05;
-                this.alpha = 0;
-                const h = 210 + Math.random() * 40;
-                const s = 65 + Math.random() * 30;
-                this.color = `hsla(${h}, ${s}%, 45%, `;
-            }
-            update() {
-                this.y -= this.speed; this.x += this.drift; this.life++;
-                const half = this.maxLife / 2;
-                this.alpha = this.life < half
-                    ? (this.life / half) * this.maxAlpha
-                    : ((this.maxLife - this.life) / half) * this.maxAlpha;
-                if (this.life >= this.maxLife || this.y < -10) this.reset();
-            }
-            draw() {
-                ctx.save();
-                ctx.globalAlpha = this.alpha;
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.fillStyle = `${this.color}1)`;
-                ctx.shadowBlur = 12;
-                ctx.shadowColor = `${this.color}0.5)`;
-                ctx.fill();
-                ctx.restore();
-            }
-        }
-
-        const particles = [];
-        for (let i = 0; i < 80; i++) particles.push(new Particle());
-        (function animate() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            particles.forEach(p => { p.update(); p.draw(); });
-            requestAnimationFrame(animate);
-        })();
-
-        // ─── FLOATING BG ICONS ───────────────────────────────
-        const bgBooks = document.getElementById('bg-books');
-        ['fa-book', 'fa-book-open', 'fa-bookmark', 'fa-scroll', 'fa-book-atlas'].forEach(icon => {
-            for (let j = 0; j < 3; j++) {
-                const el = document.createElement('i');
-                el.className = `fa-solid ${icon} bg-book`;
-                el.style.left = `${5 + Math.random() * 90}%`;
-                el.style.fontSize = `${16 + Math.random() * 28}px`;
-                el.style.animationDuration = `${12 + Math.random() * 20}s`;
-                el.style.animationDelay = `${-Math.random() * 28}s`;
-                bgBooks.appendChild(el);
-            }
-        });
-
-        // ─── RANDOM THOUGHTS ─────────────────────────────────
-        const thoughts = [
-            { quote: '"A reader lives a thousand lives before he dies. The man who never reads lives only one."', author: '— George R.R. Martin' },
-            { quote: '"Not all those who wander are lost — some are between the shelves."', author: '— J.R.R. Tolkien (Adapted)' },
-            { quote: '"Books are a uniquely portable magic."', author: '— Stephen King' },
-            { quote: '"The more that you read, the more things you will know. The more you learn, the more places you will go."', author: '— Dr. Seuss' },
-            { quote: '"A library is not a luxury but one of the necessities of life."', author: '— Henry Ward Beecher' },
-        ];
-        const thoughtQuoteEl = document.getElementById('thought-quote');
-        const thoughtAuthorEl = document.getElementById('thought-author');
-
-        // ─── BOOK OPEN / CLOSE ───────────────────────────────
-        const book = document.getElementById('book3d');
-        const bookScene = document.querySelector('.book-scene');
-        const btnAccess = document.getElementById('btn-access-website');
-        const btnClose = document.getElementById('btn-close-book');
-        const hintArrow = document.getElementById('hint-arrow');
-        const coverFront = document.getElementById('book-cover-front');
-
-        function openBook() {
-            if (book.classList.contains('is-open')) return;
-            // Pick a random thought
-            const t = thoughts[Math.floor(Math.random() * thoughts.length)];
-            thoughtQuoteEl.textContent = t.quote;
-            thoughtAuthorEl.textContent = t.author;
-
-            book.classList.add('is-open');
-            bookScene.classList.add('book-open');
-            btnClose.classList.add('visible');
-            hintArrow.style.opacity = '0';
-            coverFront.classList.add('no-hover');
-        }
-
-        function closeBook() {
-            book.classList.remove('is-open');
-            bookScene.classList.remove('book-open');
-            btnClose.classList.remove('visible');
-            hintArrow.style.opacity = '1';
-            coverFront.classList.remove('no-hover');
-        }
-
-        // Click anywhere on the cover to open
-        coverFront.addEventListener('click', (e) => {
-            e.stopPropagation();
-            openBook();
-        });
-
-        btnAccess.addEventListener('click', (e) => {
-            e.stopPropagation();
-            // ripple
-            const rect = btnAccess.getBoundingClientRect();
-            const size = Math.max(rect.width, rect.height);
-            const ripple = document.createElement('span');
-            ripple.className = 'ripple';
-            ripple.style.width = ripple.style.height = `${size}px`;
-            ripple.style.left = `${e.clientX - rect.left - size / 2}px`;
-            ripple.style.top = `${e.clientY - rect.top - size / 2}px`;
-            btnAccess.appendChild(ripple);
-            ripple.addEventListener('animationend', () => ripple.remove());
-            setTimeout(openBook, 150);
-        });
-
-        btnClose.addEventListener('click', closeBook);
-
-        // ─── API BASE URL ────────────────────────────────────
-        const API_BASE = 'http://localhost:3000';
-
-        // ─── ADMIN LOGIN ─────────────────────────────────────
-        document.getElementById('admin-login-form').addEventListener('submit', async function (e) {
-            e.preventDefault();
-            const errorEl = document.getElementById('admin-error');
-            const email = document.getElementById('admin-email').value.trim();
-            const password = document.getElementById('admin-password').value;
-            errorEl.style.display = 'none';
-
-            try {
-                const res = await fetch(API_BASE + '/api/login', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, password })
-                });
-                const data = await res.json();
-                if (data.success && data.token) {
-                    localStorage.setItem('libra_token', data.token);
-                    localStorage.setItem('libra_user', JSON.stringify(data.user));
-                    window.location.href = 'index.html';
-                } else {
-                    errorEl.textContent = data.message || 'Invalid credentials.';
-                    errorEl.style.display = 'block';
-                }
-            } catch (err) {
-                errorEl.textContent = 'Server error. Please try again.';
-                errorEl.style.display = 'block';
-            }
-        });
-
-        // ─── GOOGLE LOGIN (Firebase) ─────────────────────────
-        document.getElementById('google-login-btn').addEventListener('click', async () => {
-            const provider = new firebase.auth.GoogleAuthProvider();
-            try {
-                const result = await firebase.auth().signInWithPopup(provider);
-                const user = result.user;
-
-                // Sync with your backend
-                const res = await fetch(API_BASE + '/api/auth/sync', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        email: user.email,
-                        name: user.displayName,
-                        photoURL: user.photoURL
-                    })
-                });
-                const data = await res.json();
-                if (data.success && data.token) {
-                    localStorage.setItem('libra_token', data.token);
-                    localStorage.setItem('libra_user', JSON.stringify(data.user));
-                    window.location.href = 'index.html';
-                } else {
-                    alert(data.message || 'Login failed. Please try again.');
-                }
-            } catch (err) {
-                console.error('Google login error:', err);
-                if (err.code !== 'auth/popup-closed-by-user') {
-                    alert('Google sign-in failed: ' + err.message);
-                }
-            }
-        });
-
-        // ─── DEV STUDENT LOGIN ────────────────────────────────
-        document.getElementById('dev-student-login').addEventListener('click', async () => {
-            try {
-                const res = await fetch(API_BASE + '/api/auth/dev-student-login', { method: 'POST' });
-                const data = await res.json();
-                if (res.ok && data.token) {
-                    localStorage.setItem('libra_token', data.token);
-                    localStorage.setItem('libra_user', JSON.stringify(data.user));
-                    window.location.href = 'index.html';
-                }
-            } catch (err) { console.error('Dev login error:', err); }
-        });
-    </script>
-</body>
-
-</html>

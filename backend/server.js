@@ -66,6 +66,13 @@ const paymentLogSchema = new mongoose.Schema({
 });
 const PaymentLog = mongoose.model('PaymentLog', paymentLogSchema);
 
+const wishlistSchema = new mongoose.Schema({
+    userEmail: { type: String, required: true },
+    bookId: { type: mongoose.Schema.Types.ObjectId, ref: 'Book', required: true },
+    addedAt: { type: Date, default: Date.now }
+});
+const Wishlist = mongoose.model('Wishlist', wishlistSchema);
+
 // --- Initialization Seed (Run once to create admin and sample books if DB is empty) ---
 async function seedDatabase() {
     try {
@@ -177,7 +184,7 @@ app.get('/api/student/dashboard', verifyToken, async (req, res) => {
             const due = new Date(b.dueDate);
             const daysLeft = Math.ceil((due - today) / (1000 * 60 * 60 * 24));
             return {
-                id: b._id,
+                txId: b._id.toString(),
                 bookId: b.bookId._id,
                 title: b.bookTitle,
                 author: b.bookAuthor,
@@ -290,11 +297,11 @@ app.get('/api/stats', verifyLibrarian, async (req, res) => {
         const totalBooks = totalBooksResult.length > 0 ? totalBooksResult[0].total : 0;
 
         const finesResult = await User.aggregate([{ $group: { _id: null, totalFines: { $sum: "$pendingFines" } } }]);
-        const pendingFines = finesResult.length > 0 ? finesResult[0].totalFines : 0;
+        const totalFinesPending = finesResult.length > 0 ? finesResult[0].totalFines : 0;
 
         res.json({
             success: true,
-            stats: { totalBooks, booksIssued, totalUsers: studentCount, pendingFines }
+            stats: { totalBooks, booksIssued, totalUsers: studentCount, totalFinesPending }
         });
     } catch (e) {
         res.status(500).json({ success: false, message: "Server error." });
@@ -382,6 +389,22 @@ app.post('/api/books/return', verifyLibrarian, async (req, res) => {
         borrow.returned = true;
         borrow.returnDate = new Date();
         await borrow.save();
+
+        // --- Auto-Fine Calculation ---
+        const dueDate = new Date(borrow.dueDate);
+        const returnDate = new Date(borrow.returnDate);
+        if (returnDate > dueDate) {
+            const diffTime = Math.abs(returnDate - dueDate);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            const fineAmount = diffDays * 1; // ₹1 per day
+
+            const user = await User.findOne({ email: borrow.userEmail });
+            if (user) {
+                user.pendingFines = (user.pendingFines || 0) + fineAmount;
+                await user.save();
+                console.log(`Fine of ₹${fineAmount} added to ${user.email} (Overdue by ${diffDays} days)`);
+            }
+        }
 
         await Book.findByIdAndUpdate(borrow.bookId, { $inc: { available: 1 } });
 
@@ -496,9 +519,10 @@ app.delete('/api/books/:id', verifyLibrarian, async (req, res) => {
 
 // 14. Collect Fine (Librarian Cash Collection)
 app.post('/api/fines/collect', verifyLibrarian, async (req, res) => {
-    const { email, amount } = req.body;
+    const { email, studentEmail, amount } = req.body;
+    const targetEmail = email || studentEmail;
     try {
-        const user = await User.findOne({ email });
+        const user = await User.findOne({ email: targetEmail });
         if (!user) return res.status(404).json({ success: false, message: "User not found." });
 
         const collectedAmount = parseFloat(amount) || 0;
@@ -633,6 +657,75 @@ app.delete('/api/users/:id', verifyLibrarian, async (req, res) => {
 
         await User.findByIdAndDelete(req.params.id);
         res.json({ success: true, message: `User "${user.name}" removed.` });
+    } catch (e) {
+        res.status(500).json({ success: false, message: "Server error." });
+    }
+});
+
+// 19. Get Student Wishlist
+app.get('/api/student/wishlist', verifyToken, async (req, res) => {
+    try {
+        const items = await Wishlist.find({ userEmail: req.user.email }).populate('bookId');
+        const wishlist = items.filter(item => item.bookId).map(item => ({
+            id: item.bookId._id,
+            wishlistEntryId: item._id,
+            title: item.bookId.title,
+            author: item.bookId.author,
+            available: item.bookId.available,
+            coverClass: item.bookId.coverClass
+        }));
+        res.json({ success: true, wishlist });
+    } catch (e) {
+        res.status(500).json({ success: false, message: 'Server error.' });
+    }
+});
+
+// 20. Add to Wishlist
+app.post('/api/student/wishlist/add', verifyToken, async (req, res) => {
+    const { bookId } = req.body;
+    if (!bookId) return res.status(400).json({ success: false, message: 'Book ID required.' });
+    try {
+        const exists = await Wishlist.findOne({ userEmail: req.user.email, bookId });
+        if (exists) return res.status(400).json({ success: false, message: 'Book already in wishlist.' });
+
+        const newItem = new Wishlist({ userEmail: req.user.email, bookId });
+        await newItem.save();
+        res.json({ success: true, message: 'Added to wishlist.' });
+    } catch (e) {
+        res.status(500).json({ success: false, message: 'Server error.' });
+    }
+});
+
+// 21. Remove from Wishlist
+app.delete('/api/student/wishlist/:bookId', verifyToken, async (req, res) => {
+    try {
+        await Wishlist.deleteOne({ userEmail: req.user.email, bookId: req.params.bookId });
+        res.json({ success: true, message: 'Removed from wishlist.' });
+    } catch (e) {
+        res.status(500).json({ success: false, message: 'Server error.' });
+    }
+});
+
+// 22. Search Books (Public/Student)
+app.get('/api/books/search', verifyToken, async (req, res) => {
+    const { q } = req.query;
+    if (!q) return res.json({ success: true, books: [] });
+    try {
+        const books = await Book.find({
+            $or: [
+                { title: { $regex: q, $options: 'i' } },
+                { author: { $regex: q, $options: 'i' } }
+            ]
+        });
+        const formatBooks = books.map(b => ({
+            id: b._id.toString(),
+            title: b.title,
+            author: b.author,
+            coverClass: b.coverClass,
+            totalCopies: b.totalCopies,
+            available: b.available
+        }));
+        res.json({ success: true, books: formatBooks });
     } catch (e) {
         res.status(500).json({ success: false, message: "Server error." });
     }
