@@ -11,7 +11,7 @@ A modern, full-stack digital library ecosystem built for both **Librarians** and
 - **Inventory Manager** (`/manage-books`): Add/delete books; issue any book to a student via email.
 - **Process Returns** (`/return-books`): Mark books as returned with automatic overdue fine calculation (₹1/day).
 - **User Management** (`/manage-users`): View all accounts, fine balances; collect cash fines or remove users.
-- **Student Insights** (`/student-insights`): **[NEW]** AI-powered behavioral profiling. Generate summaries of any student's reading habits, reliability, and history using Gemini AI.
+- **Student Insights** (`/student-insights`): AI-powered behavioral profiling. Generate summaries of any student's reading habits, reliability, and history using Gemini AI.
 - **Transaction Log** (`/history`): Global log of every borrow/return across all students.
 
 ### 🎓 Student Portal
@@ -185,7 +185,7 @@ All subsequent API requests automatically attach the JWT via an Axios intercepto
 | GET | `/api/borrows` | Librarian | All active loans |
 | GET | `/api/history` | Librarian | Global transaction log |
 | GET | `/api/users` | Librarian | All users + fine balances |
-| GET | `/api/admin/student-summary/:email` | Librarian | **[NEW]** AI Student Profiling Summary |
+| GET | `/api/admin/student-summary/:email` | Librarian | AI Student Profiling Summary |
 | DELETE | `/api/users/:id` | Librarian | Remove student |
 | POST | `/api/fines/collect` | Librarian | Collect cash fine |
 
