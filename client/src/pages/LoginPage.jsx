@@ -147,7 +147,7 @@ export default function LoginPage() {
     return (
         <>
             <div className="orb orb1"></div>
-            <div classNames="orb orb2"></div>
+            <div className="orb orb2"></div>
             <div className="orb orb3"></div>
             <canvas id="particle-canvas" ref={canvasRef}></canvas>
             

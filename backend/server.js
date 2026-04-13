@@ -261,7 +261,7 @@ app.get('/api/student/reading-goal', verifyToken, async (req, res) => {
 
         res.json({
             success: true,
-            goal: user.readingGoal || 12,
+            goal: user.readingGoal || 0,
             booksRead: booksReadThisYear,
             booksActive: activeBorrowsThisYear,
             year: currentYear
@@ -630,6 +630,7 @@ app.get('/api/users', verifyLibrarian, async (req, res) => {
                 email: u.email,
                 role: u.role,
                 pendingFines: u.pendingFines || 0,
+                readingGoal: u.readingGoal || 0,
                 activeLoans,
                 totalBorrowed,
                 photoURL: u.photoURL || null
@@ -813,7 +814,7 @@ app.get('/api/admin/student-summary/:email', verifyLibrarian, async (req, res) =
 Student Name: ${student.name}
 Email: ${student.email}
 Pending Fines: ₹${(student.pendingFines || 0).toFixed(2)}
-Annual Reading Goal: ${student.readingGoal || 12} books/year
+Annual Reading Goal: ${student.readingGoal || 0} books/year
 Currently Borrowed: ${activeCount} book(s)
 Books Returned: ${pastCount} book(s)
 Full Book Record: ${booksList || 'No books borrowed yet.'}

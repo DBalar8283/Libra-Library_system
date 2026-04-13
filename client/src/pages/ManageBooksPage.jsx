@@ -24,11 +24,19 @@ export default function ManageBooksPage() {
 
     useEffect(() => { loadBooks(); }, []);
 
-    const handleDelete = async (id) => {
-        if(window.confirm('Delete this book completely from the registry?')) {
-            const res = await deleteBook(id);
-            if(res.success) loadBooks();
-            else alert(res.message);
+    const handleDelete = async (id, title) => {
+        if(window.confirm(`Delete "${title}" completely from the registry?\n\nThis cannot be undone.`)) {
+            try {
+                const res = await deleteBook(id);
+                if(res.success) {
+                    loadBooks();
+                } else {
+                    alert(res.message);
+                }
+            } catch (err) {
+                const msg = err.response?.data?.message || 'Failed to delete book.';
+                alert(msg);
+            }
         }
     };
 
@@ -52,15 +60,17 @@ export default function ManageBooksPage() {
         try {
             const res = await issueBook(issuingBookId, studentEmail);
             if(res.success) {
-                alert(res.message);
+                alert(`✅ ${res.message}`);
                 setIssuingBookId(null);
                 setStudentEmail('');
                 loadBooks();
             } else {
                 alert(res.message);
             }
-        } catch (e) {
-            alert("Error issuing book. Please check the student email.");
+        } catch (err) {
+            // Read the exact backend error message instead of a generic fallback
+            const msg = err.response?.data?.message || 'Error issuing book. Please check the student email.';
+            alert(msg);
         }
         setIsIssuing(false);
     };
@@ -133,7 +143,7 @@ export default function ManageBooksPage() {
                                                         }}>
                                                     <i className="fa-solid fa-paper-plane"></i> Issue Book
                                                 </button>
-                                                <button onClick={() => handleDelete(b.id)} 
+                                                <button onClick={() => handleDelete(b.id, b.title)} 
                                                         style={{
                                                             background: '#fef2f2', color: '#ef4444', border: '1px solid #fecaca', 
                                                             padding: '6px 12px', borderRadius: '6px', cursor: 'pointer',
