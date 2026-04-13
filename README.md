@@ -1,247 +1,118 @@
-# 📚 Libra — Library Management System
+# 📚 Libra — Advanced Library Management System
 
-A modern, full-stack digital library ecosystem built for both **Librarians** and **Students**. Features automated fine calculation, AI-powered book descriptions, student behavioral profiling, persistent wishlists, real-time search, and a role-based dual portal experience.
-
----
-
-## 🌟 Features
-
-### 👨‍🏫 Librarian Portal
-- **Dashboard**: Admin stats — total books, active loans, student count, pending fines.
-- **Inventory Manager** (`/manage-books`): Add/delete books; issue any book to a student via email.
-- **Process Returns** (`/return-books`): Mark books as returned with automatic overdue fine calculation (₹1/day).
-- **User Management** (`/manage-users`): View all accounts, fine balances; collect cash fines or remove users.
-- **Student Insights** (`/student-insights`): AI-powered behavioral profiling. Generate summaries of any student's reading habits, reliability, and history using Gemini AI.
-- **Transaction Log** (`/history`): Global log of every borrow/return across all students.
-
-### 🎓 Student Portal
-- **Dashboard** (`/`): Active loans with days-left countdown, overdue alerts, reading goal progress, AI-based book recommendations.
-- **My Books** (`/my-books`): Currently borrowed books with due date tracking.
-- **Reading History** (`/history`): Personal chronological borrow/return log.
-- **Fines & Payments** (`/fines`): Detailed fine breakdown + simulated online payments (UPI / Card / Netbanking).
-- **AI-Enhanced Wishlist** (`/wishlist`): Save books; click **✨ AI Explain** for a Gemini-powered description of any book.
-- **Live Search**: Header search bar filters catalog in real-time by title or author.
+Libra is a sophisticated, full-stack digital library ecosystem engineered for a seamless experience between **Librarians** and **Students**. It combines traditional library management (circulation, inventory, fines) with modern AI capabilities like behavioral student profiling and automated book analysis, all wrapped in a high-performance, responsive interface.
 
 ---
 
-## 🛠️ Technology Stack
+## 🌟 Comprehensive Feature Set
 
-| Layer | Technology |
+### 👨‍🏫 Librarian Administration Portal
+*   **Insightful Dashboard**: Real-time visualization of library health, including total circulation, active members, aggregate pending fines, and inventory status.
+*   **Inventory Control Center**: Manage the complete catalog with granular control over book metadata, stock levels (total vs. available), and removal protocols.
+*   **Intelligent Circulation**: Simplified "Issue & Return" workflow with real-time validation (e.g., duplicate loan prevention) and automated fine calculation back-dated to the due hour.
+*   **Student Insights & Profiling**: A dedicated section for understanding member behavior. Utilizing Gemini AI to generate professional summaries of a student's reading habits, overdue trends, and reliability.
+*   **Financial Oversight**: Track and manage pending fines. Support for recording manual cash collections at the physical counter with instant digital receipt logging.
+*   **Global Audit Log**: A comprehensive transaction history that ensures every book movement is recorded with student name, date, and issuer identity.
+
+### 🎓 Student Experience Portal
+*   **Personal Dashboard**: Track active loans with dynamic "Days Remaining" counters and overdue alerts. Features a visual reading goal tracker based on current year achievements.
+*   **Smart Catalog & Live Search**: Explore the library through a rich, image-driven catalog. Search by title or author with instantaneous results filtering.
+*   **Rich Media Cards**: Integrated via the Open Library API to provide real-world cover art for every book, maintaining a professional portrait (2:3) aspect ratio.
+*   **AI-Enhanced Wishlist**: A private shelf for tracking future reads. Includes a "Hero" modal feature where the Gemini AI provides a tailored summary and premise of the book on demand.
+*   **Financial Transparency**: Clear overview of any pending fines with a history of past payments. Includes a simulated checkout flow for online payments (UPI, Card, NetBanking).
+*   **Personal History**: A chronological log of personal reading history and returning behavior.
+
+---
+
+## 🛠️ Technical Architecture
+
+### Core Tech Stack
+| Layer | Specification |
 |---|---|
-| **Frontend** | React 19, Vite 8, React Router v7, CSS Variables |
-| **Backend** | Node.js, Express 5, JWT Authentication, bcryptjs |
-| **Database** | MongoDB Atlas (Mongoose ODM) |
-| **Auth** | Firebase (Google Sign-In for students), Email/Password (Librarian) |
-| **AI** | Google Gemini (2.5 Flash & 2.0 Fallback) (`@google/generative-ai`) |
-| **HTTP Client** | Axios (with JWT interceptor) |
+| **Frontend** | React 19 (Vite), React Router v7, Context API for State Management |
+| **Backend** | Node.js (Express 5), JWT-based Authentication |
+| **Database** | MongoDB Atlas with Mongoose ODM |
+| **Authentication** | Dual-flow: Firebase Google Auth (Students) + Secure Email/Password (Librarian) |
+| **AI Integration** | Google Gemini (Pro/Flash) with resilient network handlers |
+| **Cover Assets** | Open Library API (ISBN-based CDN) |
+| **Styling** | Vanilla CSS3 (Custom Variables & Modern Layouts) |
+
+### AI Resilience Layer
+The backend implements a highly resilient AI processing pattern:
+*   **Automatic Retries**: Implements exponential back-off (2s, 4s, 6s) to handle transient API issues or rate limits.
+*   **Model Fallback**: Automatically switches from `gemini-2.5-flash` to `gemini-2.0-flash` if repeated failures occur, ensuring high availability of AI features.
+*   **Context-Aware Prompting**: Prompts are dynamically built using real database records (borrow frequency, return speed, fine history) to ensure AI summaries are grounded in fact.
 
 ---
 
-## 📁 Project Structure
+## 📁 Detailed Directory Structure
 
 ```
 Libra-Library_system/
 ├── backend/
-│   ├── server.js             ← All routes, schemas, middleware, AI with retry logic
-│   ├── .env                  ← Secrets (never committed)
-│   ├── package.json
-│   └── seed_comprehensive.js ← Test data seeder script
+│   ├── server.js               # Core API server (Routes, Middleware, Logic)
+│   ├── .env                    # Environment secrets (Port, DB URI, API Keys)
+│   ├── package.json            # Node.js dependencies & scripts
+│   └── seed_comprehensive.js   # Advanced script to populate test scenarios
 │
 ├── client/
-│   ├── index.html            ← Root HTML + FontAwesome CDN
-│   ├── vite.config.js        ← Dev server + API proxy (/api → port 3000)
+│   ├── vite.config.js          # Build config & /api proxy to backend
 │   └── src/
-│       ├── main.jsx           ← App entry point
-│       ├── App.jsx            ← Routes + AppLayout wrapper
-│       ├── index.css          ← All styles and CSS variables
-│       ├── firebase.js        ← Firebase + Google Sign-In setup
-│       ├── context/
-│       │   └── AuthContext.jsx ← Global auth state (user, token, isLibrarian)
-│       ├── services/
-│       │   └── api.js          ← Axios instance + all API methods + JWT injection
 │       ├── components/
-│       │   ├── Header.jsx
-│       │   ├── Sidebar.jsx
-│       │   └── ProtectedRoute.jsx
-│       └── pages/             ← One file per route
-│
-├── .gitignore
-├── README.md
-└── requirements.txt
+│       │   ├── Header.jsx      # Navigation & Search Logic
+│       │   ├── Sidebar.jsx     # Role-based Navigation mapping
+│       │   └── BookCover.jsx   # Smart CDN image loader with fallback UI
+│       ├── context/
+│       │   └── AuthContext.jsx # Global User/Token management
+│       ├── services/
+│       │   └── api.js          # Centralized Axios instance with JWT Interceptors
+│       ├── utils/
+│       │   └── bookCovers.js   # Title-to-ISBN mapping for covers
+│       └── pages/              # View-level components (Dashboard, Wishlist, etc.)
 ```
 
 ---
 
-## 🚀 Getting Started
+## 🚀 Installation & Local Development
 
-### Prerequisites
-- **Node.js** v18+
-- **MongoDB Atlas** account
-- **Firebase** project (for Google Auth)
-- **Google AI Studio** API key (for Gemini)
+### 1. Prerequisite Accounts
+- **Google AI Studio**: Obtain a Gemini API Key.
+- **Firebase Console**: Configure a project for Google Authentication.
+- **MongoDB Atlas**: Set up a cluster and get your connection string.
 
-### 1. Environment Setup
-
-Create a `.env` file in the `backend/` directory:
-
+### 2. Environment Configuration
+Create a `.env` file in the `/backend` folder:
 ```env
 PORT=3000
-SECRET_KEY=your_jwt_secret_key
-MONGODB_URI=mongodb+srv://<user>:<pass>@cluster0.xxxx.mongodb.net/libraryDB
-GOOGLE_API=your_gemini_api_key
+SECRET_KEY=any_random_secure_string
+MONGODB_URI=your_mongodb_connection_uri
+GOOGLE_API=your_gemini_studio_api_key
 ```
 
-> Firebase config is in `client/src/firebase.js`. Update it with your own Firebase project settings.
-
-### 2. Install & Run
-
-**Backend** (Terminal 1):
+### 3. Execution
+**Run the Backend Server:**
 ```bash
 cd backend
 npm install
 npm start
-# → Server running at http://localhost:3000
 ```
 
-**Frontend** (Terminal 2):
+**Run the Frontend Application:**
 ```bash
 cd client
 npm install
 npm run dev
-# → App running at http://localhost:5173
 ```
 
-### 3. Seed Test Data (Optional but Recommended)
+---
 
-To populate the DB with realistic borrow histories, overdue fines, and payment logs:
-```bash
-cd backend
-node seed_comprehensive.js
-```
-
-This creates scenarios across all users:
-- 📕 Overdue books (30 days past due → pending fines)
-- ⏰ Books due soon (due tomorrow)
-- 📗 Freshly borrowed books
-- 📚 Returned books (on-time and late, for history/goal tracking)
-- 💳 Simulated past payments
+## 🧪 Business Rules & Logic
+*   **Loan Constraints**: Standard 14-day loan period. Duplicate borrows of the same book are strictly prevented.
+*   **Fine Calculation**: Fines accrue at ₹1.00 per day once the due date is passed. Calculation is triggered instantly upon book return.
+*   **Reading Goals**: Calculated based on completed (returned) books within the current calendar year.
+*   **Image Presentation**: Books are maintained in a 2:3 aspect ratio to prevent distortion of cover art across all viewports.
+*   **Role-Based Access**: Students can only access their specific dashboard and wishlist; Librarian routes are strictly guarded by middleware.
 
 ---
 
-## 🔐 Authentication Flow
-
-### Student (Google)
-1. Clicks "Sign in with Google" → Firebase popup
-2. Firebase returns Google profile
-3. Backend (`POST /api/auth/sync`) finds or creates user, returns JWT
-4. JWT stored in `localStorage['libra_token']`
-
-### Librarian (Email/Password)
-1. Submits email + password form
-2. Backend (`POST /api/login`) validates with bcrypt, returns JWT
-3. JWT stored in `localStorage['libra_token']`
-
-All subsequent API requests automatically attach the JWT via an Axios interceptor in `api.js`.
-
----
-
-## 🔌 API Endpoints (23 Routes)
-
-### Auth
-| Method | Endpoint | Auth | Description |
-|--------|----------|------|-------------|
-| POST | `/api/login` | None | Librarian email/password login |
-| POST | `/api/auth/sync` | None | Student Google auth sync |
-
-### Books
-| Method | Endpoint | Auth | Description |
-|--------|----------|------|-------------|
-| GET | `/api/books` | Token | Get full catalog |
-| GET | `/api/books/search?q=` | Token | Search by title/author |
-| POST | `/api/books/add` | Librarian | Add new book |
-| DELETE | `/api/books/:id` | Librarian | Delete book |
-| POST | `/api/books/issue` | Librarian | Issue book to student (14-day loan) |
-| POST | `/api/books/return` | Librarian | Return book + auto-calculate fine |
-| GET | `/api/books/:bookId/ai-description` | Token | Gemini AI book summary |
-
-### Student
-| Method | Endpoint | Auth | Description |
-|--------|----------|------|-------------|
-| GET | `/api/student/dashboard` | Token | Active loans, fines, reading stats |
-| GET | `/api/my-books` | Token | Currently borrowed books |
-| GET | `/api/student/history` | Token | Personal borrow/return history |
-| GET | `/api/student/reading-goal` | Token | Reading goal + progress |
-| PUT | `/api/student/reading-goal` | Token | Update reading goal |
-| GET | `/api/student/fines` | Token | Fine balance + payment history |
-| POST | `/api/student/fines/pay-online` | Token | Simulated online payment |
-| GET | `/api/student/wishlist` | Token | Get wishlist |
-| POST | `/api/student/wishlist/add` | Token | Add book to wishlist |
-| DELETE | `/api/student/wishlist/:bookId` | Token | Remove from wishlist |
-
-### Librarian
-| Method | Endpoint | Auth | Description |
-|--------|----------|------|-------------|
-| GET | `/api/stats` | Librarian | Aggregated library stats |
-| GET | `/api/borrows` | Librarian | All active loans |
-| GET | `/api/history` | Librarian | Global transaction log |
-| GET | `/api/users` | Librarian | All users + fine balances |
-| GET | `/api/admin/student-summary/:email` | Librarian | AI Student Profiling Summary |
-| DELETE | `/api/users/:id` | Librarian | Remove student |
-| POST | `/api/fines/collect` | Librarian | Collect cash fine |
-
----
-
-## 💡 Business Logic
-
-| Rule | Detail |
-|---|---|
-| **Loan Period** | 14 days from issue date |
-| **Fine Rate** | ₹1.00 per day overdue |
-| **Fine Trigger** | Auto-calculated when librarian processes return |
-| **Self-Borrow** | Disabled — librarians must issue books |
-| **Duplicate Loan** | Blocked — student can't have same book twice |
-| **Wishlist** | Persisted in MongoDB per account |
-| **Reading Goal** | Based on books returned in current calendar year |
-| **Search** | Case-insensitive substring match on title + author |
-
----
-
-## 🗄️ MongoDB Collections
-
-| Collection | Key Fields |
-|---|---|
-| `users` | `email`, `role`, `pendingFines`, `readingGoal` |
-| `books` | `title`, `author`, `totalCopies`, `available` |
-| `borrows` | `bookId`, `userEmail`, `dueDate`, `returned`, `returnDate` |
-| `paymentlogs` | `userEmail`, `amount`, `method`, `status` |
-| `wishlists` | `userEmail`, `bookId` |
-
----
-
-## ✨ AI Integration (Robust Logic)
-
-The backend now features a **resilient AI processing layer** using Google Gemini.
-
-### Features:
-1. **Automatic Retry Logic**: If the Gemini API experiences a temporary outage (503 Service Unavailable) or rate limit (429), the backend automatically retries up to 3 times with exponential back-off (2s, 4s, 6s).
-2. **Model Fallback**: If `gemini-2.5-flash` fails after retries, the system automatically falls back to `gemini-2.0-flash` to ensure continuity.
-3. **Student Profiling**: Analyzes a student's entire history (returned books, active loans, fines) to generate a concise behavioral overview for librarians.
-4. **Book Summaries**: Generates engaging catalog descriptions for students in the wishlist.
-
-### Technical Detail:
-- **Service**: Google Generative AI (`@google/generative-ai`)
-- **Error Handling**: Network-level and API-level error recovery.
-- **Security**: Endpoint access gated by JWT and role-based permissions (Student/Librarian).
-
----
-
-## 🧪 Test Credentials
-
-| Role | Email | Password |
-|---|---|---|
-| Librarian | `admin@library.com` | `password123` |
-| Student | Any Google Account | — (Google Sign-In) |
-
----
-
-*Made with ❤️ for modern library management.*
+*Developed for high-efficiency modern library management.*
