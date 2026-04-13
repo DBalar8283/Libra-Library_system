@@ -93,6 +93,11 @@ export const collectFine = async (studentEmail, amount) => {
     return res.data;
 };
 
+export const getStudentAiSummary = async (email) => {
+    const res = await api.get(`/admin/student-summary/${email}`);
+    return res.data;
+};
+
 // === Student ===
 export const getStudentDashboard = async () => {
     const res = await api.get('/student/dashboard');
@@ -106,6 +111,11 @@ export const getMyBooks = async () => {
 
 export const getHistory = async () => {
     const res = await api.get('/history');
+    return res.data;
+};
+
+export const getStudentHistory = async () => {
+    const res = await api.get('/student/history');
     return res.data;
 };
 
@@ -143,6 +153,11 @@ export const removeFromWishlistApi = async (bookId) => {
 // === Search ===
 export const searchBooks = async (query) => {
     const res = await api.get('/books/search', { params: { q: query } });
+    return res.data;
+};
+
+export const getBookAiDescription = async (bookId) => {
+    const res = await api.get(`/books/${bookId}/ai-description`);
     return res.data;
 };
 

@@ -13,6 +13,7 @@ import WishlistPage from './pages/WishlistPage';
 import ManageBooksPage from './pages/ManageBooksPage';
 import ManageUsersPage from './pages/ManageUsersPage';
 import ReturnBooksPage from './pages/ReturnBooksPage';
+import StudentInsightsPage from './pages/StudentInsightsPage';
 
 const AppLayout = ({ children }) => {
     return (
@@ -45,6 +46,7 @@ function App() {
             {/* Librarian only routes */}
             <Route path="/manage-books" element={<ProtectedRoute reqLibrarian><AppLayout><ManageBooksPage /></AppLayout></ProtectedRoute>} />
             <Route path="/manage-users" element={<ProtectedRoute reqLibrarian><AppLayout><ManageUsersPage /></AppLayout></ProtectedRoute>} />
+            <Route path="/student-insights" element={<ProtectedRoute reqLibrarian><AppLayout><StudentInsightsPage /></AppLayout></ProtectedRoute>} />
             <Route path="/return-books" element={<ProtectedRoute reqLibrarian><AppLayout><ReturnBooksPage /></AppLayout></ProtectedRoute>} />
 
             <Route path="*" element={<Navigate to="/" replace />} />

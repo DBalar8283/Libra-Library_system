@@ -87,20 +87,30 @@ export default function ManageUsersPage() {
                                     </td>
                                     <td>
                                         {!isLibrarian && (
-                                            <div style={{display:'flex', gap:'8px'}}>
-                                                <button onClick={() => handleCollectFine(u)} title="Collect Fine" style={{
-                                                    background: hasFine ? 'rgba(16,185,129,0.1)' : 'rgba(200,200,200,0.1)', 
-                                                    color: hasFine ? '#10b981' : '#999', 
-                                                    border: 'none', padding: '8px 12px', borderRadius: '8px', cursor: hasFine ? 'pointer' : 'default',
-                                                    transition: 'all 0.2s'
-                                                }}>
-                                                    <i className="fa-solid fa-hand-holding-dollar"></i>
+                                            <div style={{display:'flex', gap:'8px', flexWrap: 'wrap'}}>
+                                                <button onClick={() => handleCollectFine(u)} 
+                                                        disabled={!hasFine}
+                                                        style={{
+                                                            background: hasFine ? '#ecfdf5' : '#f9fafb', 
+                                                            color: hasFine ? '#059669' : '#9ca3af', 
+                                                            border: hasFine ? '1px solid #a7f3d0' : '1px solid #e5e7eb', 
+                                                            padding: '6px 12px', borderRadius: '6px', cursor: hasFine ? 'pointer' : 'not-allowed',
+                                                            fontSize: '13px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px',
+                                                            transition: 'all 0.2s'
+                                                        }}>
+                                                    <i className="fa-solid fa-hand-holding-dollar"></i> Clear Fine
                                                 </button>
-                                                <button onClick={() => handleDelete(u.id, u.name)} title="Remove User" style={{
-                                                    background: 'rgba(239,68,68,0.1)', color: '#ef4444', border: 'none', 
-                                                    padding: '8px 12px', borderRadius: '8px', cursor: 'pointer'
-                                                }}>
-                                                    <i className="fa-solid fa-user-xmark"></i>
+                                                <button onClick={() => handleDelete(u.id, u.name)} 
+                                                        style={{
+                                                            background: '#fef2f2', color: '#ef4444', border: '1px solid #fecaca', 
+                                                            padding: '6px 12px', borderRadius: '6px', cursor: 'pointer',
+                                                            fontSize: '13px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px',
+                                                            transition: 'all 0.2s'
+                                                        }}
+                                                        onMouseEnter={e => {e.currentTarget.style.background = '#fee2e2'}}
+                                                        onMouseLeave={e => {e.currentTarget.style.background = '#fef2f2'}}
+                                                        >
+                                                    <i className="fa-solid fa-user-xmark"></i> Remove
                                                 </button>
                                             </div>
                                         )}

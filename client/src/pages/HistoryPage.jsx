@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { getHistory } from '../services/api';
+import { getHistory, getStudentHistory } from '../services/api';
 
 export default function HistoryPage() {
     const { isLibrarian } = useAuth();
@@ -8,11 +8,12 @@ export default function HistoryPage() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        getHistory().then(res => {
+        const fetchMethod = isLibrarian ? getHistory : getStudentHistory;
+        fetchMethod().then(res => {
             if(res && res.success) setHistory(res.history || []);
             setLoading(false);
         }).catch(() => setLoading(false));
-    }, []);
+    }, [isLibrarian]);
 
     if(loading) return <div>Loading history...</div>;
 

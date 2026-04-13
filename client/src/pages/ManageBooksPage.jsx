@@ -120,24 +120,30 @@ export default function ManageBooksPage() {
                                             </span>
                                         </td>
                                         <td>
-                                            <div style={{display:'flex', gap:'8px'}}>
+                                            <div style={{display:'flex', gap:'8px', flexWrap: 'wrap'}}>
                                                 <button onClick={() => { setIssuingBookId(isIssuingThis ? null : b.id); setStudentEmail(''); }} 
                                                         disabled={isLow}
-                                                        title="Issue to Student"
                                                         style={{
-                                                            background: isLow ? '#f3f4f6' : 'rgba(59,130,246,0.1)', 
+                                                            background: isLow ? '#f3f4f6' : '#eff6ff', 
                                                             color: isLow ? '#9ca3af' : '#2563eb', 
-                                                            border: 'none', padding: '8px 12px', borderRadius: '8px', cursor: isLow ? 'not-allowed' : 'pointer'
+                                                            border: isLow ? '1px solid #e5e7eb' : '1px solid #bfdbfe', 
+                                                            padding: '6px 12px', borderRadius: '6px', cursor: isLow ? 'not-allowed' : 'pointer',
+                                                            fontSize: '13px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px',
+                                                            transition: 'all 0.2s'
                                                         }}>
-                                                    <i className="fa-solid fa-paper-plane"></i>
+                                                    <i className="fa-solid fa-paper-plane"></i> Issue Book
                                                 </button>
                                                 <button onClick={() => handleDelete(b.id)} 
-                                                        title="Delete Book"
                                                         style={{
-                                                            background: 'rgba(239,68,68,0.1)', color: '#ef4444', border: 'none', 
-                                                            padding: '8px 12px', borderRadius: '8px', cursor: 'pointer'
-                                                        }}>
-                                                    <i className="fa-solid fa-trash"></i>
+                                                            background: '#fef2f2', color: '#ef4444', border: '1px solid #fecaca', 
+                                                            padding: '6px 12px', borderRadius: '6px', cursor: 'pointer',
+                                                            fontSize: '13px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px',
+                                                            transition: 'all 0.2s'
+                                                        }}
+                                                        onMouseEnter={e => {e.currentTarget.style.background = '#fee2e2'}}
+                                                        onMouseLeave={e => {e.currentTarget.style.background = '#fef2f2'}}
+                                                        >
+                                                    <i className="fa-solid fa-trash"></i> Delete
                                                 </button>
                                             </div>
                                         </td>

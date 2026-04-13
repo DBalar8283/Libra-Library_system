@@ -58,6 +58,10 @@ export default function Sidebar() {
                             <i className="fas fa-users"></i>
                             <span>Manage Users</span>
                         </NavLink>
+                        <NavLink to="/student-insights" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+                            <i className="fas fa-chart-pie"></i>
+                            <span>Student Insights</span>
+                        </NavLink>
                         <NavLink to="/history" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
                             <i className="fas fa-list-alt"></i>
                             <span>Transaction Log</span>

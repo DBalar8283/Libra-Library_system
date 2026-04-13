@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const path = require('path');
+const { GoogleGenerativeAI } = require("@google/generative-ai");
 
 const app = express();
 app.use(cors());
@@ -14,6 +15,7 @@ app.use(express.static(path.join(__dirname)));
 const PORT = process.env.PORT || 3000;
 const SECRET_KEY = process.env.SECRET_KEY || 'libra_secret_key_12345';
 const MONGODB_URI = process.env.MONGODB_URI;
+const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API);
 
 // --- MongoDB Connection ---
 mongoose.connect(MONGODB_URI)
@@ -731,7 +733,100 @@ app.get('/api/books/search', verifyToken, async (req, res) => {
     }
 });
 
-// Start the server
+// --- AI Assistance Routes ---
+
+// Shared helper: retry Gemini calls up to `maxRetries` times with exponential back-off.
+// Tries gemini-2.5-flash first, then falls back to gemini-2.0-flash if it keeps failing.
+const GEMINI_MODELS = ['gemini-2.5-flash', 'gemini-2.0-flash'];
+
+async function geminiGenerate(prompt, maxRetries = 3) {
+    const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+    for (const modelName of GEMINI_MODELS) {
+        for (let attempt = 1; attempt <= maxRetries; attempt++) {
+            try {
+                const model = genAI.getGenerativeModel({ model: modelName });
+                const result = await model.generateContent(prompt);
+                const text = result.response.text();
+                console.log(`[AI] OK via ${modelName} (attempt ${attempt})`);
+                return text;
+            } catch (e) {
+                const status = e.status;
+                const retryable = status === 503 || status === 429 || !status; // 503 overloaded, 429 rate limit, no status = network error
+                const notFound = status === 404;
+
+                if (notFound) {
+                    // This model name is wrong for this key — skip to next model
+                    console.warn(`[AI] ${modelName} not supported, trying next model...`);
+                    break;
+                }
+
+                if (retryable && attempt < maxRetries) {
+                    const waitMs = attempt * 2000;
+                    console.warn(`[AI] ${modelName} attempt ${attempt} failed (${status || 'network'}), retrying in ${waitMs}ms...`);
+                    await delay(waitMs);
+                } else {
+                    console.error(`[AI] ${modelName} failed after ${attempt} attempts:`, e.message);
+                    break;
+                }
+            }
+        }
+    }
+    throw new Error('All Gemini models failed after retries.');
+}
+
+// 22. Get AI Book Description
+app.get('/api/books/:bookId/ai-description', verifyToken, async (req, res) => {
+    try {
+        const { bookId } = req.params;
+        const book = await Book.findById(bookId);
+        if (!book) return res.status(404).json({ success: false, message: "Book not found." });
+
+        const prompt = `Provide a concise, engaging 2-3 sentence summary/description of the book "${book.title}" by "${book.author}" for a library catalog. Focus on the premise and why someone should read it.`;
+        const text = await geminiGenerate(prompt);
+
+        res.json({ success: true, description: text });
+    } catch (e) {
+        console.error("Book AI Error:", e.message);
+        res.status(500).json({ success: false, message: "AI service is temporarily unavailable. Please try again in a moment." });
+    }
+});
+
+// 23. Get AI Student Insights (Admin)
+app.get('/api/admin/student-summary/:email', verifyLibrarian, async (req, res) => {
+    try {
+        const { email } = req.params;
+        const student = await User.findOne({ email });
+        if (!student) return res.status(404).json({ success: false, message: "Student not found." });
+
+        const borrows = await Borrow.find({ userEmail: email }).sort({ borrowDate: -1 });
+
+        let activeCount = 0;
+        let pastCount = 0;
+        let booksList = borrows.map(b => {
+            if (b.returned) pastCount++; else activeCount++;
+            const fine = !b.returned ? '' : '';
+            return `"${b.bookTitle}" by ${b.bookAuthor} (${b.returned ? 'Returned' : 'Currently borrowed'})`;
+        }).join('; ');
+
+        const prompt = `You are a professional library assistant AI. Analyze the following student data and write a concise 3-4 sentence professional summary for a librarian.
+Student Name: ${student.name}
+Email: ${student.email}
+Pending Fines: ₹${(student.pendingFines || 0).toFixed(2)}
+Annual Reading Goal: ${student.readingGoal || 12} books/year
+Currently Borrowed: ${activeCount} book(s)
+Books Returned: ${pastCount} book(s)
+Full Book Record: ${booksList || 'No books borrowed yet.'}
+Summarise their reading activity, engagement level, and reliability. Keep tone professional and constructive. Output a single paragraph only.`;
+
+        const text = await geminiGenerate(prompt);
+        res.json({ success: true, summary: text });
+    } catch (e) {
+        console.error("Student AI Error:", e.message);
+        res.status(500).json({ success: false, message: "AI service is temporarily unavailable. Please try again in a moment." });
+    }
+});
+
 app.listen(PORT, () => {
     console.log(`Librarian Backend Server running on http://localhost:${PORT}`);
 });
